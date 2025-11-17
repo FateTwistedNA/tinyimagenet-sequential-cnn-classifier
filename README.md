@@ -1,13 +1,13 @@
 # COSC 4368 – CNN Design Challenge (Tiny ImageNet Subset)
 
-This repo contains my solution for the COSC 4368 CNN Design Challenge: a custom sequential CNN in PyTorch trained on a subset of Tiny ImageNet.
+This repo contains my solution for the COSC 4368 CNN Design Challenge: a custom **sequential CNN** in PyTorch trained on a subset of Tiny ImageNet.
 
-- **Images:** 64×64, RGB
-- **Classes:** 200 logits (to match Tiny ImageNet label indices)
-- **Splits:** 
-  - 70% train (`train-70_.pkl`)
-  - 10% validation (`validation-10_.pkl`)
-  - 20% hidden test (held by instructor)
+- **Image size:** 64×64, RGB  
+- **Output classes:** 200 logits (matching Tiny ImageNet label indices)  
+- **Splits:**  
+  - 70% train (`train-70_.pkl`)  
+  - 10% validation (`validation-10_.pkl`)  
+  - 20% hidden test (held by instructor)  
 
 The instructor will import the model, load `model.pth`, and call `predict(...)` on their hidden test loader.
 
@@ -17,24 +17,41 @@ The instructor will import the model, load `model.pth`, and call `predict(...)` 
 
 ### Python version
 
-Tested with **Python 3.11** (3.10+ should also work) on Windows with a CUDA GPU (NVIDIA 2080 Super).
+Tested with:
+
+- **Python 3.12.6** on Windows  
+- NVIDIA **RTX 2080 Super** (CUDA available)
+
+Python 3.11+ should also work.
 
 ### Create and activate a virtual environment
 
+From the repo root:
+
 ```bash
-# From the repo root
+# Create venv
 python -m venv .venv
 
 # Activate (PowerShell on Windows)
 .venv\Scripts\Activate.ps1
 
-# (On CMD)
+# Or (CMD on Windows)
 .venv\Scripts\activate.bat
 
-# (On Linux/macOS)
+# Or (Linux/macOS)
 source .venv/bin/activate
 
-#Design Choice
+# Install Dependencies
+pip install --upgrade pip
+
+pip install \
+  torch \
+  torchvision \
+  pillow \
+  numpy
+
+
+# Design Choice
 ```
 ### Architecture. 
 I used a straightforward 4-block CNN designed for 64×64 RGB images. Each block has two 3×3 convolutions followed by batch norm and ReLU, then a 2×2 max-pool and dropout. Channels go 32 → 64 → 128 → 256, so after four pools the spatial size is 4×4 and I flatten 256×4×4 features into a 512-unit fully connected layer and then a final linear layer over 200 classes. This keeps the model deep enough to extract hierarchical features, but still within the assignment rules—no pretraining, no residual connections, just Conv–BN–ReLU–Pool–Dropout–Linear in a sequential style.
@@ -52,7 +69,7 @@ To improve generalization I combine data augmentation, dropout, weight decay, an
 I set a reasonably high max epoch count and rely on early stopping based on validation accuracy, so the model stops when it stops actually improving instead of just memorizing the training set. I also fix random seeds for Python, NumPy, and PyTorch (CPU and CUDA) so that I can reproduce runs when I find a good configuration.
 
 ### Accuracy
-I was able to achieve 72% validation accuracy after 100 epochs. I picked 100 epochs because the dataset was massive, so the model needed more epochs to learn fully until plateau.
+I was able to achieve ≈ 72% validation accuracy on validation-10_.pkl after training with early stopping up to 100 epochs. I picked 100 epochs because the dataset was massive, so the model needed more epochs to learn fully until plateau.
 
 ### Improvements
 Because this model followed the rules and constraints of the challenge, it left a lot on the table for improvements. I believe this model, with some more tweaks can achieve a lot better results.

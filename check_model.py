@@ -4,7 +4,7 @@ import numpy as np
 from main import load_model, get_dataloaders, predict
 
 # 1. Load best model
-model = load_model("model_100epochs.pth") 
+model = load_model("model.pth") 
 print("Loaded model OK.")
 
 # 2. Build val loader
