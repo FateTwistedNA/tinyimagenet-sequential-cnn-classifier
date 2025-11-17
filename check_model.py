@@ -20,8 +20,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 preds = predict(model, val_loader, device=device)
 print("Predictions shape:", preds.shape)
 
-# Optional sanity: compute validation accuracy here
-# (only if you know how to recover labels from your val pickle)
+# Compute validation accuracy here
 import pickle
 
 with open("validation-10_.pkl", "rb") as f:
